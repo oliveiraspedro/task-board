@@ -1,0 +1,13 @@
+com\board\todo_board\entities\BoardEntity.class
+com\board\todo_board\repositories\CardRepository.class
+com\board\todo_board\repositories\BlockedCardRepository.class
+com\board\todo_board\controllers\BoardController.class
+com\board\todo_board\repositories\BoardRepository.class
+com\board\todo_board\entities\BlockedCardEntity.class
+com\board\todo_board\entities\ColumEntity.class
+com\board\todo_board\repositories\ColumRepository.class
+com\board\todo_board\services\BoardService.class
+com\board\todo_board\entities\CardEntity.class
+com\board\todo_board\ui\MainMenu.class
+com\board\todo_board\TodoBoardApplication.class
+com\board\todo_board\enums\ColumTypesEnum.class
