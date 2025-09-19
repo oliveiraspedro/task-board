@@ -6,7 +6,6 @@ import com.board.todo_board.entities.ColumEntity;
 import com.board.todo_board.repositories.BoardRepository;
 import com.board.todo_board.repositories.CardRepository;
 import com.board.todo_board.repositories.ColumRepository;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
-@NoArgsConstructor
 public class BoardService {
 
     @Autowired
@@ -58,7 +56,6 @@ public class BoardService {
     public void createCard(Long boardId, String cardTitle, String cardDescription){
 
         //todo: Implementar a lógica de formatação de data de criação do card
-        //todo: Conectar ao CardRepository para salvar o card no banco de dados
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy");
 

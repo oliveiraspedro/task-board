@@ -1,0 +1,34 @@
+# Exclui arquivos do Maven
+/target/
+/pom.xml.tag
+/pom.xml.versionsBackup
+/pom.xml.next
+/release.properties
+/dependency-reduced-pom.xml
+/buildNumber.properties
+/.mvn/timing.properties
+!/.mvn/wrapper/maven-wrapper.jar
+
+# Exclui arquivos do Gradle
+.gradle/
+/build/
+
+# Exclui arquivos de IDE (IntelliJ, Eclipse, etc.)
+.idea/
+.project
+.classpath
+*.iml
+*.iws
+*.ipr
+.settings/
+
+# Exclui arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Exclui arquivos de logs
+*.log
+
+# Exclui arquivos de configuração sensíveis
+src/main/resources/application.properties
+src/main/resources/application.yml
