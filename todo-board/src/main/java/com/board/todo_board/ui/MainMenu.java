@@ -1,7 +1,7 @@
 package com.board.todo_board.ui;
 
 import com.board.todo_board.entities.BoardEntity;
-import com.board.todo_board.entities.ColumEntity;
+import com.board.todo_board.entities.ColumnEntity;
 import com.board.todo_board.enums.ColumTypesEnum;
 import com.board.todo_board.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class MainMenu {
     }
 
     private void createBoard(){
-        List<ColumEntity> columnsList = new ArrayList<>();
+        List<ColumnEntity> columnsList = new ArrayList<>();
 
         System.out.println("Digite o nome do novo Board:");
         String boardName = sc.nextLine();
@@ -153,8 +153,8 @@ public class MainMenu {
         }
     }
 
-    private ColumEntity createColumn(String name, int order, ColumTypesEnum type){
-        ColumEntity columEntity = new ColumEntity();
+    private ColumnEntity createColumn(String name, int order, ColumTypesEnum type){
+        ColumnEntity columEntity = new ColumnEntity();
         columEntity.setName(name);
         columEntity.setColumn_order(order);
         columEntity.setType(type);

@@ -2,7 +2,7 @@ package com.board.todo_board.services;
 
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
-import com.board.todo_board.entities.ColumEntity;
+import com.board.todo_board.entities.ColumnEntity;
 import com.board.todo_board.repositories.BoardRepository;
 import com.board.todo_board.repositories.CardRepository;
 import com.board.todo_board.repositories.ColumRepository;
@@ -26,7 +26,7 @@ public class BoardService {
     @Autowired
     ColumRepository columRepository;
 
-    public void createBoard(String boardName, List<ColumEntity> columns){
+    public void createBoard(String boardName, List<ColumnEntity> columns){
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setName(boardName);
 
@@ -39,7 +39,7 @@ public class BoardService {
 
     }
 
-    public void createColumns(Long boardId, List<ColumEntity> columns){
+    public void createColumns(Long boardId, List<ColumnEntity> columns){
         System.out.println("CRIANDO COLUNAS...");
         columns.forEach(columEntity -> {
             columEntity.setBoardId(boardId);
@@ -74,6 +74,9 @@ public class BoardService {
             card.setTitle(cardTitle);
             card.setDescription(cardDescription);
             card.setCreateAt(LocalDateTime.now());
+
+            //todo: Arrumar está lógica. O parâmetro passado aqui deve ser o da coluna board_id na tabela columns
+            //      aonde o type dessa coluna tem que ser igual a INITIAL
             card.setColumnId(boardId);
             cardRepository.save(card);
         }
@@ -83,12 +86,16 @@ public class BoardService {
         return boardRepository.findAll();
     }
 
-    public List<ColumEntity> getAllColumnsByBoardId(Long boardId){
+    public List<ColumnEntity> getAllColumnsByBoardId(Long boardId){
         return columRepository.findByBoardId(boardId);
     }
 
     public List<CardEntity> getAllCardByColumnId(Long columnId){
         return cardRepository.findByColumnId(columnId);
+    }
+
+    public void moveCard(CardEntity card, ColumnEntity column){
+        cardRepository.moveCardByColumnId(card.getId(), column.getId());
     }
 
     public void deleteBoard(BoardEntity board){

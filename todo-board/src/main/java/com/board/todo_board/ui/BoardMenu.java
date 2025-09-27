@@ -2,11 +2,12 @@ package com.board.todo_board.ui;
 
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
-import com.board.todo_board.entities.ColumEntity;
+import com.board.todo_board.entities.ColumnEntity;
 import com.board.todo_board.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -50,7 +51,7 @@ public class BoardMenu {
                     break;
                 case 2:
                     System.out.println("Movendo um novo card");
-                    moveCard();
+                    moveCard(board);
                     break;
                 case 3:
                     System.out.println("Editar um card");
@@ -77,7 +78,7 @@ public class BoardMenu {
     }
 
     public void displayBoard(BoardEntity board){
-        List<ColumEntity> columnsList = boardService.getAllColumnsByBoardId(board.getId());
+        List<ColumnEntity> columnsList = boardService.getAllColumnsByBoardId(board.getId());
         AtomicInteger cardIndex = new AtomicInteger(1);
 
         //todo: Fazer com que após o usuário realizar alguma ação, mostrar novamente as informações abaixo
@@ -99,6 +100,7 @@ public class BoardMenu {
     }
 
     private void createCard(Long boardId){
+        System.out.println(" >> BOARD_ID: " + boardId);
         System.out.println("Digite o título do card:");
         String cardTitle = sc.nextLine();
 
@@ -108,11 +110,59 @@ public class BoardMenu {
         boardService.createCard(boardId, cardTitle, cardDescription);
     }
 
-    private void moveCard() {}
+    private void moveCard(BoardEntity board) {
+        //todo: Um card deve navegar nas colunas seguindo a ordem delas no board, sem pular nenhuma etapa,
+        //      exceto pela coluna de cards cancelados que pode receber cards diretamente de qualquer coluna que não for uma coluna final
+
+        //todo: Se um card estiver marcado como bloqueado ele não pode ser movido até ser desbloqueado
+
+        List<CardEntity> cardList = new ArrayList<>();
+        List<ColumnEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
+        AtomicInteger columnIndex = new AtomicInteger(1);
+        AtomicInteger cardIndex = new AtomicInteger(1);
+
+        columnList.forEach(column -> cardList.addAll(boardService.getAllCardByColumnId(column.getId())));
+
+        System.out.println("*****************************************************");
+        System.out.println("           Selecione um Card para Mover");
+        System.out.println("*****************************************************");
+        columnList.forEach(column -> {
+            System.out.println("-----------------------------------------------------\n" +
+                    " COLUNA: " + column.getName() + "\n" +
+                    "-----------------------------------------------------");
+            boardService.getAllCardByColumnId(column.getId()).forEach(card -> {
+                System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
+                        "      " + card.getDescription() +"\n");
+            });
+        });
+
+        System.out.print("Digite o número do card que deseja mover: ");
+        int userCardChosed = Integer.parseInt(sc.nextLine())-1;
+
+        System.out.println("*****************************************************");
+        System.out.println("           Selecione um Card para qual Coluna");
+        System.out.println("*****************************************************");
+
+        columnList.forEach(column -> {
+            System.out.println("-----------------------------------------------------\n" +
+                    " COLUNA " + columnIndex.getAndIncrement() + ": " + column.getName() + "\n" +
+                    "-----------------------------------------------------");
+        });
+
+        System.out.print("Digite o número do card que deseja mover: ");
+        int userColumnChosed = Integer.parseInt(sc.nextLine())-1;
+
+//        cardList.forEach(card -> System.out.println("CARD LIST: " + card.getTitle()));
+//        columnList.forEach(column -> System.out.println("COLUMN LIST: " + column.getName()));
+//        System.out.println("CARD ESCOLHIDO PELO USUÁRIO: " + cardList.get(userCardChosed).getTitle());
+//        System.out.println("COLUMN ESCOLHIDO PELO USUÁRIO: " + columnList.get(userColumnChosed).getName());
+
+        boardService.moveCard(cardList.get(userCardChosed), columnList.get(userColumnChosed));
+    }
 
     private void editCard(BoardEntity board){
         List<CardEntity> cardsList = new ArrayList<>();
-        List<ColumEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
+        List<ColumnEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
         AtomicInteger cardIndex = new AtomicInteger(1);
 
         columnList.forEach(column -> cardsList.addAll(boardService.getAllCardByColumnId(column.getId())));
@@ -123,6 +173,17 @@ public class BoardMenu {
         cardsList.forEach(card -> {
             System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " (ID: " + card.getId() + ")");
         });
+
+        System.out.println("   >> Título 1");
+        System.out.println("   >> Descrição 2");
+        System.out.println("O que você quer editar?");
+        int userRespose = Integer.parseInt(sc.nextLine());
+        
+//        if (userRespose == 1){
+//            boardService.alterCardTitle();
+//        } else if (userRespose == 2) {
+//            boardService.alterCardDescription();
+//        }
     }
 
     private void cancelCard(){}
