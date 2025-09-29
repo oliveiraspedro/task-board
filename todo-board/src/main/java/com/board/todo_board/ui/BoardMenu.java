@@ -2,13 +2,16 @@ package com.board.todo_board.ui;
 
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
+import com.board.todo_board.entities.ColumnEntity;
 import com.board.todo_board.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class BoardMenu {
@@ -18,22 +21,26 @@ public class BoardMenu {
 
     Scanner sc = new Scanner(System.in);
 
-    List<CardEntity> cardList = new ArrayList<>();
-
     public void execute(BoardEntity board){
-
         boolean runnig = true;
 
-        //cardList = loadCards(board.getId());
+        displayBoard(board);
 
+        System.out.println("""
+                *****************************************************
+                              Ações Disponíveis
+                *****************************************************""");
         while(runnig){
+            AtomicInteger optionsIndex = new AtomicInteger(1);
+
             System.out.println("BOARD: " + board.getName());
-            System.out.println("1 - Criar um Card");
-            System.out.println("2 - Mover Card");
-            System.out.println("3 - Cancelar um Card");
-            System.out.println("4 - Bloquear um Card");
-            System.out.println("5 - Desbloquear um Card");
-            System.out.println("6 - Sair");
+            System.out.println(optionsIndex.getAndIncrement() + " - Criar um Card");
+            System.out.println(optionsIndex.getAndIncrement() + " - Mover Card");
+            System.out.println(optionsIndex.getAndIncrement() + " - Editar Card");
+            System.out.println(optionsIndex.getAndIncrement() + " - Cancelar um Card");
+            System.out.println(optionsIndex.getAndIncrement() + " - Bloquear um Card");
+            System.out.println(optionsIndex.getAndIncrement() + " - Desbloquear um Card");
+            System.out.println(optionsIndex.getAndIncrement() + " - Sair");
 
             int response = Integer.parseInt(sc.nextLine());
 
@@ -44,21 +51,25 @@ public class BoardMenu {
                     break;
                 case 2:
                     System.out.println("Movendo um novo card");
-                    moveCard();
+                    moveCard(board);
                     break;
                 case 3:
+                    System.out.println("Editar um card");
+                    editCard(board);
+                    break;
+                case 4:
                     System.out.println("Cancelando um card");
                     cancelCard();
                     break;
-                case 4:
+                case 5:
                     System.out.println("Bloqueando um card");
                     blockCard();
                     break;
-                case 5:
+                case 6:
                     System.out.println("Desbloqueando um card");
                     unblockCard();
                     break;
-                case 6:
+                case 7:
                     System.out.println("Saindo do sistema...");
                     runnig = false;
                     break;
@@ -66,7 +77,30 @@ public class BoardMenu {
         }
     }
 
-    public void createCard(Long boardId){
+    public void displayBoard(BoardEntity board){
+        List<ColumnEntity> columnsList = boardService.getAllColumnsByBoardId(board.getId());
+        AtomicInteger cardIndex = new AtomicInteger(1);
+
+        //todo: Fazer com que após o usuário realizar alguma ação, mostrar novamente as informações abaixo
+        System.out.println("*****************************************************");
+        System.out.println("                    Board de Tarefas");
+        System.out.println("*****************************************************");
+        System.out.println(">> Nome: " + board.getName());
+        columnsList.forEach(column -> {
+            List<CardEntity> cardsList = boardService.getAllCardByColumnId(column.getId());
+
+            System.out.println("-----------------------------------------------------\n" +
+                    " COLUNA: " + column.getName() + "\n" +
+                    "-----------------------------------------------------");
+            cardsList.forEach(card -> {
+                System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
+                        "      " + card.getDescription() +"\n");
+            });
+        });
+    }
+
+    private void createCard(Long boardId){
+        System.out.println(" >> BOARD_ID: " + boardId);
         System.out.println("Digite o título do card:");
         String cardTitle = sc.nextLine();
 
@@ -76,13 +110,80 @@ public class BoardMenu {
         boardService.createCard(boardId, cardTitle, cardDescription);
     }
 
-    private void moveCard() {}
+    private void moveCard(BoardEntity board) {
+        List<CardEntity> cardList = new ArrayList<>();
+        List<ColumnEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
+        AtomicInteger columnIndex = new AtomicInteger(1);
+        AtomicInteger cardIndex = new AtomicInteger(1);
+
+        columnList.forEach(column -> cardList.addAll(boardService.getAllCardByColumnId(column.getId())));
+
+        System.out.println("*****************************************************");
+        System.out.println("           Selecione um Card para Mover");
+        System.out.println("*****************************************************");
+        columnList.forEach(column -> {
+            System.out.println("-----------------------------------------------------\n" +
+                    " COLUNA: " + column.getName() + "\n" +
+                    "-----------------------------------------------------");
+            boardService.getAllCardByColumnId(column.getId()).forEach(card -> {
+                System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
+                        "      " + card.getDescription() +"\n");
+            });
+        });
+
+        System.out.print("Digite o número do card que deseja mover: ");
+        int userCardChosed = Integer.parseInt(sc.nextLine())-1;
+
+        System.out.println("*****************************************************");
+        System.out.println("           Selecione um Card para qual Coluna");
+        System.out.println("*****************************************************");
+
+        columnList.forEach(column -> {
+            System.out.println("-----------------------------------------------------\n" +
+                    " COLUNA " + columnIndex.getAndIncrement() + ": " + column.getName() + "\n" +
+                    "-----------------------------------------------------");
+        });
+
+        System.out.print("Digite o número da coluna que para qual você deseja mover o card: ");
+        int userColumnChosed = Integer.parseInt(sc.nextLine())-1;
+
+//        cardList.forEach(card -> System.out.println("CARD LIST: " + card.getTitle()));
+//        columnList.forEach(column -> System.out.println("COLUMN LIST: " + column.getName()));
+//        System.out.println("CARD ESCOLHIDO PELO USUÁRIO: " + cardList.get(userCardChosed).getTitle());
+//        System.out.println("COLUMN ESCOLHIDO PELO USUÁRIO: " + columnList.get(userColumnChosed).getName());
+
+        boardService.moveCard(cardList.get(userCardChosed), columnList.get(userColumnChosed));
+    }
+
+    private void editCard(BoardEntity board){
+        List<CardEntity> cardsList = new ArrayList<>();
+        List<ColumnEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
+        AtomicInteger cardIndex = new AtomicInteger(1);
+
+        columnList.forEach(column -> cardsList.addAll(boardService.getAllCardByColumnId(column.getId())));
+
+        System.out.println("*****************************************************");
+        System.out.println("           Selecione um Card para Edição");
+        System.out.println("*****************************************************");
+        cardsList.forEach(card -> {
+            System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " (ID: " + card.getId() + ")");
+        });
+
+        System.out.println("   >> Título 1");
+        System.out.println("   >> Descrição 2");
+        System.out.println("O que você quer editar?");
+        int userRespose = Integer.parseInt(sc.nextLine());
+        
+//        if (userRespose == 1){
+//            boardService.alterCardTitle();
+//        } else if (userRespose == 2) {
+//            boardService.alterCardDescription();
+//        }
+    }
 
     private void cancelCard(){}
 
     private void blockCard(){}
 
     private void unblockCard(){}
-
-    //private List<CardEntity> loadCards(Long id){}
 }

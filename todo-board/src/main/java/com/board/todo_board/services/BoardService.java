@@ -2,10 +2,12 @@ package com.board.todo_board.services;
 
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
-import com.board.todo_board.entities.ColumEntity;
+import com.board.todo_board.entities.ColumnEntity;
+import com.board.todo_board.enums.ColumTypesEnum;
 import com.board.todo_board.repositories.BoardRepository;
 import com.board.todo_board.repositories.CardRepository;
 import com.board.todo_board.repositories.ColumRepository;
+import jakarta.persistence.Column;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BoardService {
@@ -26,7 +29,7 @@ public class BoardService {
     @Autowired
     ColumRepository columRepository;
 
-    public void createBoard(String boardName, List<ColumEntity> columns){
+    public void createBoard(String boardName, List<ColumnEntity> columns){
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setName(boardName);
 
@@ -39,10 +42,10 @@ public class BoardService {
 
     }
 
-    public void createColumns(Long boardId, List<ColumEntity> columns){
+    public void createColumns(Long boardId, List<ColumnEntity> columns){
         System.out.println("CRIANDO COLUNAS...");
         columns.forEach(columEntity -> {
-            columEntity.setBoard_id(boardId);
+            columEntity.setBoardId(boardId);
             columRepository.save(columEntity);
 
             System.out.println("COLUNA CRIADA COM SUCESSO!!");
@@ -74,13 +77,48 @@ public class BoardService {
             card.setTitle(cardTitle);
             card.setDescription(cardDescription);
             card.setCreateAt(LocalDateTime.now());
-            card.setColumnId(boardId);
+
+            Optional<ColumnEntity> initialColumnOptional = columRepository.findByBoardIdAndType(boardId, ColumTypesEnum.INITIAL);
+            ColumnEntity initialColumn = initialColumnOptional.orElseThrow(() -> new RuntimeException("Coluna inicial não encontrada para este board"));
+            card.setColumnId(initialColumn.getId());
             cardRepository.save(card);
         }
     }
 
     public List<BoardEntity> getAllBoards(){
         return boardRepository.findAll();
+    }
+
+    public List<ColumnEntity> getAllColumnsByBoardId(Long boardId){
+        return columRepository.findColumnsByBoardId(boardId);
+    }
+
+    public List<CardEntity> getAllCardByColumnId(Long columnId){
+        return cardRepository.findByColumnId(columnId);
+    }
+
+    public void moveCard(CardEntity card, ColumnEntity columnToMove){
+        Optional<ColumnEntity> optionalColumn = columRepository.findById(card.getColumnId());
+        ColumnEntity starterColumn = optionalColumn.orElseThrow(() -> new RuntimeException("Coluna não encontrada"));
+
+        System.out.println("    >> LOG: CARD: " + card.getTitle());
+        System.out.println("    >> LOG: COLUMN: " + columnToMove.getName());
+        System.out.println("    >> LOG: Tipo da coluna em que o card está: " + starterColumn.getType());
+        System.out.println("    >> LOG: Tipo da coluna em que o card deve ser movido: " + columnToMove.getType());
+
+        if (starterColumn.getType() == ColumTypesEnum.INITIAL && columnToMove.getType() == ColumTypesEnum.PENDING){
+            System.out.println("    >> LOG: Movendo card da coluna INITIAL para a coluna PENDING");
+            cardRepository.moveCardByColumnId(card.getId(), columnToMove.getId());
+        } else if(starterColumn.getType() == ColumTypesEnum.PENDING && columnToMove.getType() == ColumTypesEnum.FINAL){
+            System.out.println("    >> LOG: Movendo card da coluna PENDING para a coluna FINAL");
+            cardRepository.moveCardByColumnId(card.getId(), columnToMove.getId());
+        } else if(columnToMove.getType() == ColumTypesEnum.CANCELED){
+            System.out.println("    >> LOG: Movendo card da coluna " + starterColumn.getType() + " para a coluna " + columnToMove.getType());
+            cardRepository.moveCardByColumnId(card.getId(), columnToMove.getId());
+        } else {
+            System.out.println("OS CARDS SÓ PODEM SER MOVIDOS NA ORDEM DAS COLUNAS CRIADAS");
+            System.out.println("EXEMPLO: INITIAL -> PENDING -> FINAL");
+        }
     }
 
     public void deleteBoard(BoardEntity board){

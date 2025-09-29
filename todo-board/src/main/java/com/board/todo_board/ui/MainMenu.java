@@ -1,7 +1,7 @@
 package com.board.todo_board.ui;
 
 import com.board.todo_board.entities.BoardEntity;
-import com.board.todo_board.entities.ColumEntity;
+import com.board.todo_board.entities.ColumnEntity;
 import com.board.todo_board.enums.ColumTypesEnum;
 import com.board.todo_board.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +28,12 @@ public class MainMenu {
         boolean runnig = true;
 
         while(runnig){
-            System.out.println("1 - Criar um Board");
-            System.out.println("2 - Selecionar um Board");
-            System.out.println("3 - Deletar um Board");
-            System.out.println("4 - Sair");
+            AtomicInteger optionsCounter = new AtomicInteger();
+            System.out.println(optionsCounter.getAndIncrement()+1 + " - Criar um Board");
+            System.out.println(optionsCounter.getAndIncrement()+1 + " - Selecionar um Board");
+            System.out.println(optionsCounter.getAndIncrement()+1 + " - Editar um Board");
+            System.out.println(optionsCounter.getAndIncrement()+1 + " - Deletar um Board");
+            System.out.println(optionsCounter.getAndIncrement()+1 + " - Sair");
 
             int response = Integer.parseInt(sc.nextLine());
 
@@ -45,10 +47,14 @@ public class MainMenu {
                     selectBoard();
                     break;
                 case 3:
-                    System.out.println("Deletando um board");
+                    System.out.println("Editar um Board");
                     deleteBoard();
                     break;
                 case 4:
+                    System.out.println("Deletando um board");
+                    deleteBoard();;
+                    break;
+                case 5:
                     System.out.println("Saindo do sistema...");
                     runnig = false;
                     break;
@@ -57,7 +63,7 @@ public class MainMenu {
     }
 
     private void createBoard(){
-        List<ColumEntity> columnsList = new ArrayList<>();
+        List<ColumnEntity> columnsList = new ArrayList<>();
 
         System.out.println("Digite o nome do novo Board:");
         String boardName = sc.nextLine();
@@ -117,6 +123,8 @@ public class MainMenu {
         }
     }
 
+    private void editBoard(){}
+
     private void deleteBoard(){
         List<BoardEntity> boardList = boardService.getAllBoards();
 
@@ -145,8 +153,8 @@ public class MainMenu {
         }
     }
 
-    private ColumEntity createColumn(String name, int order, ColumTypesEnum type){
-        ColumEntity columEntity = new ColumEntity();
+    private ColumnEntity createColumn(String name, int order, ColumTypesEnum type){
+        ColumnEntity columEntity = new ColumnEntity();
         columEntity.setName(name);
         columEntity.setColumn_order(order);
         columEntity.setType(type);
