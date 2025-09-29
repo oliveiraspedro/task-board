@@ -7,6 +7,7 @@ import com.board.todo_board.enums.ColumTypesEnum;
 import com.board.todo_board.repositories.BoardRepository;
 import com.board.todo_board.repositories.CardRepository;
 import com.board.todo_board.repositories.ColumRepository;
+import jakarta.persistence.Column;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,8 +78,6 @@ public class BoardService {
             card.setDescription(cardDescription);
             card.setCreateAt(LocalDateTime.now());
 
-            //todo: Arrumar está lógica. O parâmetro passado aqui deve ser o da coluna board_id na tabela columns
-            //      aonde o type dessa coluna tem que ser igual a INITIAL
             Optional<ColumnEntity> initialColumnOptional = columRepository.findByBoardIdAndType(boardId, ColumTypesEnum.INITIAL);
             ColumnEntity initialColumn = initialColumnOptional.orElseThrow(() -> new RuntimeException("Coluna inicial não encontrada para este board"));
             card.setColumnId(initialColumn.getId());
@@ -98,8 +97,28 @@ public class BoardService {
         return cardRepository.findByColumnId(columnId);
     }
 
-    public void moveCard(CardEntity card, ColumnEntity column){
-        cardRepository.moveCardByColumnId(card.getId(), column.getId());
+    public void moveCard(CardEntity card, ColumnEntity columnToMove){
+        Optional<ColumnEntity> optionalColumn = columRepository.findById(card.getColumnId());
+        ColumnEntity starterColumn = optionalColumn.orElseThrow(() -> new RuntimeException("Coluna não encontrada"));
+
+        System.out.println("    >> LOG: CARD: " + card.getTitle());
+        System.out.println("    >> LOG: COLUMN: " + columnToMove.getName());
+        System.out.println("    >> LOG: Tipo da coluna em que o card está: " + starterColumn.getType());
+        System.out.println("    >> LOG: Tipo da coluna em que o card deve ser movido: " + columnToMove.getType());
+
+        if (starterColumn.getType() == ColumTypesEnum.INITIAL && columnToMove.getType() == ColumTypesEnum.PENDING){
+            System.out.println("    >> LOG: Movendo card da coluna INITIAL para a coluna PENDING");
+            cardRepository.moveCardByColumnId(card.getId(), columnToMove.getId());
+        } else if(starterColumn.getType() == ColumTypesEnum.PENDING && columnToMove.getType() == ColumTypesEnum.FINAL){
+            System.out.println("    >> LOG: Movendo card da coluna PENDING para a coluna FINAL");
+            cardRepository.moveCardByColumnId(card.getId(), columnToMove.getId());
+        } else if(columnToMove.getType() == ColumTypesEnum.CANCELED){
+            System.out.println("    >> LOG: Movendo card da coluna " + starterColumn.getType() + " para a coluna " + columnToMove.getType());
+            cardRepository.moveCardByColumnId(card.getId(), columnToMove.getId());
+        } else {
+            System.out.println("OS CARDS SÓ PODEM SER MOVIDOS NA ORDEM DAS COLUNAS CRIADAS");
+            System.out.println("EXEMPLO: INITIAL -> PENDING -> FINAL");
+        }
     }
 
     public void deleteBoard(BoardEntity board){

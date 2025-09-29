@@ -111,11 +111,6 @@ public class BoardMenu {
     }
 
     private void moveCard(BoardEntity board) {
-        //todo: Um card deve navegar nas colunas seguindo a ordem delas no board, sem pular nenhuma etapa,
-        //      exceto pela coluna de cards cancelados que pode receber cards diretamente de qualquer coluna que não for uma coluna final
-
-        //todo: Se um card estiver marcado como bloqueado ele não pode ser movido até ser desbloqueado
-
         List<CardEntity> cardList = new ArrayList<>();
         List<ColumnEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
         AtomicInteger columnIndex = new AtomicInteger(1);
@@ -149,7 +144,7 @@ public class BoardMenu {
                     "-----------------------------------------------------");
         });
 
-        System.out.print("Digite o número do card que deseja mover: ");
+        System.out.print("Digite o número da coluna que para qual você deseja mover o card: ");
         int userColumnChosed = Integer.parseInt(sc.nextLine())-1;
 
 //        cardList.forEach(card -> System.out.println("CARD LIST: " + card.getTitle()));
