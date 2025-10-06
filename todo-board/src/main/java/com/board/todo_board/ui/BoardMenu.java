@@ -7,7 +7,6 @@ import com.board.todo_board.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,14 +23,14 @@ public class BoardMenu {
     public void execute(BoardEntity board){
         boolean runnig = true;
 
-        displayBoard(board);
-
         System.out.println("""
                 *****************************************************
                               Ações Disponíveis
                 *****************************************************""");
         while(runnig){
             AtomicInteger optionsIndex = new AtomicInteger(1);
+
+            displayBoard(board);
 
             System.out.println("BOARD: " + board.getName());
             System.out.println(optionsIndex.getAndIncrement() + " - Criar um Card");
