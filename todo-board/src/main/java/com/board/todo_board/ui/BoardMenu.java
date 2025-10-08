@@ -1,5 +1,6 @@
 package com.board.todo_board.ui;
 
+import com.board.todo_board.entities.BlockedCardEntity;
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
 import com.board.todo_board.entities.ColumnEntity;
@@ -62,7 +63,7 @@ public class BoardMenu {
                     break;
                 case 5:
                     System.out.println("Bloqueando um card");
-                    blockCard();
+                    blockCard(board);
                     break;
                 case 6:
                     System.out.println("Desbloqueando um card");
@@ -80,7 +81,6 @@ public class BoardMenu {
         List<ColumnEntity> columnsList = boardService.getAllColumnsByBoardId(board.getId());
         AtomicInteger cardIndex = new AtomicInteger(1);
 
-        //todo: Fazer com que após o usuário realizar alguma ação, mostrar novamente as informações abaixo
         System.out.println("*****************************************************");
         System.out.println("                    Board de Tarefas");
         System.out.println("*****************************************************");
@@ -92,8 +92,13 @@ public class BoardMenu {
                     " COLUNA: " + column.getName() + "\n" +
                     "-----------------------------------------------------");
             cardsList.forEach(card -> {
-                System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
-                        "      " + card.getDescription() +"\n");
+                if (card.getBlockedCardsId() != null){
+                    System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " [Bloqueado]" + "\n" +
+                            "      " + card.getDescription() +"\n");
+                } else {
+                    System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
+                            "      " + card.getDescription() +"\n");
+                }
             });
         });
     }
@@ -125,8 +130,10 @@ public class BoardMenu {
                     " COLUNA: " + column.getName() + "\n" +
                     "-----------------------------------------------------");
             boardService.getAllCardByColumnId(column.getId()).forEach(card -> {
-                System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
-                        "      " + card.getDescription() +"\n");
+                if (card.getBlockedCardsId() == null){
+                    System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
+                            "      " + card.getDescription() +"\n");
+                }
             });
         });
 
@@ -190,7 +197,27 @@ public class BoardMenu {
 
     private void cancelCard(){}
 
-    private void blockCard(){}
+    private void blockCard(BoardEntity board){
+        List<CardEntity> cardsList = new ArrayList<>();
+        List<ColumnEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
+        AtomicInteger cardIndex = new AtomicInteger(1);
+
+        columnList.forEach(column -> cardsList.addAll(boardService.getAllCardByColumnId(column.getId())));
+
+        System.out.println("*****************************************************");
+        System.out.println("           Selecione um Card para Bloquear");
+        System.out.println("*****************************************************");
+        cardsList.forEach(card -> {
+            System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " (ID: " + card.getId() + ")");
+        });
+
+        int cardSelected = Integer.parseInt(sc.nextLine())-1;
+
+        System.out.println("Qual é o motivo da bloqueio?");
+        String blockCause = sc.nextLine();
+
+        boardService.blockCard(cardsList.get(cardSelected).getId(), blockCause);
+    }
 
     private void unblockCard(){}
 }

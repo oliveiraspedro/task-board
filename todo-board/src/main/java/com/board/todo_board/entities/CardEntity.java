@@ -26,4 +26,7 @@ public class CardEntity {
 
     @Column(name = "column_id")
     private Long columnId;
+
+    @Column(name = "blocked_cards_id")
+    private Long blockedCardsId;
 }

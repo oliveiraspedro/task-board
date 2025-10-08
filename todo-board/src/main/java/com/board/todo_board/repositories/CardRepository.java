@@ -26,4 +26,9 @@ public interface CardRepository extends JpaRepository<CardEntity, Long> {
     @Transactional
     @Query("UPDATE CardEntity c SET c.description = ?2 WHERE id = ?1")
     void alterCardDescriptionByCardId(Long cardId, String newDescription);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE CardEntity c SET c.blockedCardsId = ?2 WHERE id = ?1")
+    void alterBlockCardIdByCardId(Long cardId, Long blockCardId);
 }

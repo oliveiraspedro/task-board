@@ -1,13 +1,14 @@
 package com.board.todo_board.services;
 
+import com.board.todo_board.entities.BlockedCardEntity;
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
 import com.board.todo_board.entities.ColumnEntity;
 import com.board.todo_board.enums.ColumTypesEnum;
+import com.board.todo_board.repositories.BlockedCardRepository;
 import com.board.todo_board.repositories.BoardRepository;
 import com.board.todo_board.repositories.CardRepository;
 import com.board.todo_board.repositories.ColumRepository;
-import jakarta.persistence.Column;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,9 @@ public class BoardService {
 
     @Autowired
     ColumRepository columRepository;
+
+    @Autowired
+    BlockedCardRepository blockedCardRepository;
 
     public void createBoard(String boardName, List<ColumnEntity> columns){
         BoardEntity boardEntity = new BoardEntity();
@@ -131,5 +135,13 @@ public class BoardService {
 
     public void deleteBoard(BoardEntity board){
         boardRepository.delete(board);
+    }
+
+    public void blockCard(Long cardId, String blockCause){
+        BlockedCardEntity blockedCard = new BlockedCardEntity();
+        blockedCard.setBlockCause(blockCause);
+        blockedCard.setBlockedIn(LocalDateTime.now());
+        Long blockedCardId = blockedCardRepository.save(blockedCard).getId();
+        cardRepository.alterBlockCardIdByCardId(cardId, blockedCardId);
     }
 }
