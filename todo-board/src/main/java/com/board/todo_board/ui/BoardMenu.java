@@ -1,5 +1,6 @@
 package com.board.todo_board.ui;
 
+import com.board.todo_board.dtos.CardDetailsDTO;
 import com.board.todo_board.entities.BlockedCardEntity;
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
@@ -37,7 +38,7 @@ public class BoardMenu {
             System.out.println(optionsIndex.getAndIncrement() + " - Criar um Card");
             System.out.println(optionsIndex.getAndIncrement() + " - Mover Card");
             System.out.println(optionsIndex.getAndIncrement() + " - Editar Card");
-            System.out.println(optionsIndex.getAndIncrement() + " - Cancelar um Card");
+            System.out.println(optionsIndex.getAndIncrement() + " - Visualizar detalhes de um Card");
             System.out.println(optionsIndex.getAndIncrement() + " - Bloquear um Card");
             System.out.println(optionsIndex.getAndIncrement() + " - Desbloquear um Card");
             System.out.println(optionsIndex.getAndIncrement() + " - Sair");
@@ -58,8 +59,8 @@ public class BoardMenu {
                     editCard(board);
                     break;
                 case 4:
-                    System.out.println("Cancelando um card");
-                    cancelCard();
+                    System.out.println("Visualizar detalhes de um card");
+                    viewCard(board);
                     break;
                 case 5:
                     System.out.println("Bloqueando um card");
@@ -92,7 +93,7 @@ public class BoardMenu {
                     " COLUNA: " + column.getName() + "\n" +
                     "-----------------------------------------------------");
             cardsList.forEach(card -> {
-                if (card.getBlockedCardsId() != null){
+                if (card.getBlockedCard() != null){
                     System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " [Bloqueado]" + "\n" +
                             "      " + card.getDescription() +"\n");
                 } else {
@@ -130,7 +131,7 @@ public class BoardMenu {
                     " COLUNA: " + column.getName() + "\n" +
                     "-----------------------------------------------------");
             boardService.getAllCardByColumnId(column.getId()).forEach(card -> {
-                if (card.getBlockedCardsId() == null){
+                if (card.getBlockedCard() == null){
                     System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
                             "      " + card.getDescription() +"\n");
                 }
@@ -195,7 +196,31 @@ public class BoardMenu {
         }
     }
 
-    private void cancelCard(){}
+    private void viewCard(BoardEntity board){
+        List<CardEntity> cardsList = new ArrayList<>();
+        List<ColumnEntity> columnList = boardService.getAllColumnsByBoardId(board.getId());
+        AtomicInteger cardIndex = new AtomicInteger(1);
+        columnList.forEach(column -> cardsList.addAll(boardService.getAllCardByColumnId(column.getId())));
+
+        System.out.println("*****************************************************");
+        System.out.println("           Selecione um Card para Visualiza-lo");
+        System.out.println("*****************************************************");
+        cardsList.forEach(card -> {
+            System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " (ID: " + card.getId() + ")");
+        });
+
+        int cardSelected = Integer.parseInt(sc.nextLine())-1;
+
+        CardDetailsDTO cardDTO = boardService.getCardById(cardsList.get(cardSelected).getId());
+
+        System.out.println("   >> Card #" + cardDTO.getId() + " | " + cardDTO.getTitle() + "\n" +
+                "      " + "Descrição: " + cardDTO.getDescription() + "\n" +
+                "      " + "Criado em: " + cardDTO.getCreateAt() + "\n" +
+                "      " + "Status: " + "" + "\n" +
+                "      " + "Motivo: " + cardDTO.getBlockCause() + "\n" +
+                "      " + "Data de Bloqueio: " + cardDTO.getBlockedIn());
+
+    }
 
     private void blockCard(BoardEntity board){
         List<CardEntity> cardsList = new ArrayList<>();

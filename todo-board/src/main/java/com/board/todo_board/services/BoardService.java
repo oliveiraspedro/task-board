@@ -1,5 +1,6 @@
 package com.board.todo_board.services;
 
+import com.board.todo_board.dtos.CardDetailsDTO;
 import com.board.todo_board.entities.BlockedCardEntity;
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
@@ -95,6 +96,35 @@ public class BoardService {
 
     public List<ColumnEntity> getAllColumnsByBoardId(Long boardId){
         return columRepository.findColumnsByBoardId(boardId);
+    }
+
+    public CardDetailsDTO getCardById(Long cardId){
+        Optional<CardEntity> cardEntityOptional = cardRepository.findById(cardId);
+        CardEntity card = cardEntityOptional.orElseThrow(() -> new RuntimeException("Card não encontrado"));
+
+        CardDetailsDTO cardDetailsDTO = new CardDetailsDTO();
+        cardDetailsDTO.setId(card.getId());
+        cardDetailsDTO.setTitle(card.getTitle());
+        cardDetailsDTO.setDescription(card.getDescription());
+        cardDetailsDTO.setCreateAt(card.getCreateAt());
+
+        BlockedCardEntity blockedCard = card.getBlockedCard();
+
+        if (blockedCard != null) {
+            cardDetailsDTO.setBlocked(true);
+            cardDetailsDTO.setBlockedIn(blockedCard.getBlockedIn());
+            cardDetailsDTO.setBlockCause(blockedCard.getBlockCause());
+
+            if (blockedCard.getUnblockedIn() != null) {
+                cardDetailsDTO.setUnblockedIn(blockedCard.getUnblockedIn());
+                cardDetailsDTO.setUnblockCause(blockedCard.getUnblockCause());
+            }
+        } else {
+            cardDetailsDTO.setBlocked(false);
+        }
+
+        return cardDetailsDTO;
+
     }
 
     public List<CardEntity> getAllCardByColumnId(Long columnId){
