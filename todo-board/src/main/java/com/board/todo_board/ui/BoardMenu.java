@@ -154,11 +154,6 @@ public class BoardMenu {
         System.out.print("Digite o número da coluna que para qual você deseja mover o card: ");
         int userColumnChosed = Integer.parseInt(sc.nextLine())-1;
 
-//        cardList.forEach(card -> System.out.println("CARD LIST: " + card.getTitle()));
-//        columnList.forEach(column -> System.out.println("COLUMN LIST: " + column.getName()));
-//        System.out.println("CARD ESCOLHIDO PELO USUÁRIO: " + cardList.get(userCardChosed).getTitle());
-//        System.out.println("COLUMN ESCOLHIDO PELO USUÁRIO: " + columnList.get(userColumnChosed).getName());
-
         boardService.moveCard(cardList.get(userCardChosed), columnList.get(userColumnChosed));
     }
 
