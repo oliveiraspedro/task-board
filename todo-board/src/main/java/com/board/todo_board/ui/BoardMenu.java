@@ -252,7 +252,12 @@ public class BoardMenu {
         System.out.println("           Selecione um Card para Bloquear");
         System.out.println("*****************************************************");
         cardsList.forEach(card -> {
-            System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " (ID: " + card.getId() + ")");
+            CardDetailsDTO cardDTO = boardService.getCardById(card.getId());
+            ColumTypesEnum columnType = boardService.getColumnById(card.getColumnId()).getType();
+            if (!cardDTO.isBlocked() && cardDTO.getBlockedIn() == null && columnType != ColumTypesEnum.CANCELED){
+                System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
+                        "      " + card.getDescription() + "\n");
+            }
         });
 
         int cardSelected = Integer.parseInt(sc.nextLine())-1;
