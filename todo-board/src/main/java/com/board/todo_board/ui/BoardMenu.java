@@ -4,6 +4,7 @@ import com.board.todo_board.dtos.CardDetailsDTO;
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
 import com.board.todo_board.entities.ColumnEntity;
+import com.board.todo_board.enums.ColumTypesEnum;
 import com.board.todo_board.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -171,7 +172,12 @@ public class BoardMenu {
         System.out.println("           Selecione um Card para Edição");
         System.out.println("*****************************************************");
         cardsList.forEach(card -> {
-            System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + " (ID: " + card.getId() + ")");
+            CardDetailsDTO cardDTO = boardService.getCardById(card.getId());
+            ColumTypesEnum columnType = boardService.getColumnById(card.getColumnId()).getType();
+            if (!cardDTO.isBlocked() && cardDTO.getBlockedIn() == null && columnType != ColumTypesEnum.CANCELED){
+                System.out.println("   >> Card #" + cardIndex.getAndIncrement() + " | " + card.getTitle() + "\n" +
+                        "      " + card.getDescription() + "\n" + "Column Type: " + columnType + "\n");
+            }
         });
 
         //todo: Fazer tratamento de erro

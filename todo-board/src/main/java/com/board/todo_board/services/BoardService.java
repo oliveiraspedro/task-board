@@ -178,4 +178,9 @@ public class BoardService {
 
         blockedCardRepository.alterUnblockCauseAndUnblockedIn(blockedCard.getId(), unblockCause, LocalDateTime.now());
     }
+
+    public ColumnEntity getColumnById(Long columnId){
+        Optional<ColumnEntity> optionalColumn = columRepository.findById(columnId);
+        return optionalColumn.orElseThrow(() -> new RuntimeException("Coluna não encontrada"));
+    }
 }
