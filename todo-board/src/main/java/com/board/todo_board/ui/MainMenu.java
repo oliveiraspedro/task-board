@@ -123,7 +123,33 @@ public class MainMenu {
         }
     }
 
-    private void editBoard(){}
+    private void editBoard(){
+        List<BoardEntity> boardList = boardService.getAllBoards();
+
+        if(boardList.isEmpty()){
+            System.out.println("VOCÊ NÃO CRIOU NENHUM BOARD AINDA");
+        } else {
+            while (true){
+                System.out.println("Qual board você quer editar?");
+
+                AtomicInteger atomicInteger = new AtomicInteger();
+                boardList.forEach(board -> {
+                    System.out.println(atomicInteger.getAndIncrement() + " - " + board.getName());
+                });
+
+                int response = Integer.parseInt(sc.nextLine());
+                if(response >= 0 && response <= boardList.size()){
+                    System.out.print("Digite o novo nome do board: ");
+                    String newBoardName = sc.nextLine();
+                    boardService.alterBoardName(boardList.get(response), newBoardName);
+                    System.out.println("Nome alterado com sucesso!");
+                    return;
+                }
+
+                System.out.println("ESTE BOARD NÃO EXISTE NA SUA LISTA DE BOARDS!!");
+            }
+        }
+    }
 
     private void deleteBoard(){
         List<BoardEntity> boardList = boardService.getAllBoards();
