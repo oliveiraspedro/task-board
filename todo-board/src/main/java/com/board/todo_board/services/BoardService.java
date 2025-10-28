@@ -98,6 +98,10 @@ public class BoardService {
         return columRepository.findColumnsByBoardId(boardId);
     }
 
+    public void alterBoardName(BoardEntity board, String newBoardName){
+        boardRepository.alterBoardNameByBoardId(board.getId(), newBoardName);
+    }
+
     public CardDetailsDTO getCardById(Long cardId){
         Optional<CardEntity> cardEntityOptional = cardRepository.findById(cardId);
         CardEntity card = cardEntityOptional.orElseThrow(() -> new RuntimeException("Card não encontrado"));
