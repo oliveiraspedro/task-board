@@ -31,4 +31,13 @@ public class BoardController {
             System.out.println("Erro ao alterar o nome do board: " + e.getMessage());
         }
     }
+
+    public void deleteBoard(BoardEntity board){
+        try {
+            boardService.deleteBoard(board);
+            System.out.println("Board deletado com sucesso!");
+        } catch (Exception e){
+            System.out.println("Erro ao tentar deletar o board: " + e.getMessage());
+        }
+    }
 }

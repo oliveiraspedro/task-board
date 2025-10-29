@@ -162,8 +162,7 @@ public class MainMenu {
             System.out.println("VOCÊ NÃO CRIOU NENHUM BOARD AINDA");
         } else{
             while (true){
-                System.out.println("Qual board você quer deleter?");
-
+                //todo: refatorar este código. Redundância
                 if(!boardList.isEmpty()){
                     AtomicInteger atomicInteger = new AtomicInteger();
                     boardList.forEach(board -> {
@@ -171,10 +170,10 @@ public class MainMenu {
                     });
                 }
 
-                int response = Integer.parseInt(sc.nextLine());
-                if(response >= 0 && response <= boardList.size()){
+                int response = readInt("Qual board você quer deleter?");
+                if(response >= 0 && response < boardList.size()){
                     System.out.println("DELETANDO BOARD " + boardList.get(response).getName());
-                    boardService.deleteBoard(boardList.get(response));
+                    boardController.deleteBoard(boardList.get(response));
                     return;
                 }
 
