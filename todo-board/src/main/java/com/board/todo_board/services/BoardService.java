@@ -107,6 +107,11 @@ public class BoardService {
     }
 
     public void alterBoardName(BoardEntity board, String newBoardName){
+
+        if (newBoardName.isEmpty() || newBoardName.isBlank()){
+            throw new IllegalArgumentException();
+        }
+
         boardRepository.alterBoardNameByBoardId(board.getId(), newBoardName);
     }
 

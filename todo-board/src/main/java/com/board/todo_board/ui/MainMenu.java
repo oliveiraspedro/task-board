@@ -102,7 +102,7 @@ public class MainMenu {
     private void selectBoard(){
         List<BoardEntity> boardList = boardService.getAllBoards();
 
-        //todo: error handling ao selecionar uma board que não existe
+        //todo: error handling ao selecionar um board que não existe
         if (boardList.isEmpty()){
             System.out.println("VOCÊ NÃO CRIOU NENHUM BOARD AINDA");
         } else {
@@ -135,18 +135,17 @@ public class MainMenu {
             System.out.println("VOCÊ NÃO CRIOU NENHUM BOARD AINDA");
         } else {
             while (true){
-                System.out.println("Qual board você quer editar?");
-
                 AtomicInteger atomicInteger = new AtomicInteger();
                 boardList.forEach(board -> {
                     System.out.println(atomicInteger.getAndIncrement() + " - " + board.getName());
                 });
 
-                int response = Integer.parseInt(sc.nextLine());
-                if(response >= 0 && response <= boardList.size()){
+                int response = readInt("Qual board você quer editar?");
+                System.out.println("BOARD LIST SIZE: " + boardList.size());
+                if(response >= 0 && response < boardList.size()){
                     System.out.print("Digite o novo nome do board: ");
                     String newBoardName = sc.nextLine();
-                    boardService.alterBoardName(boardList.get(response), newBoardName);
+                    boardController.alterBoardName(boardList.get(response), newBoardName);
                     System.out.println("Nome alterado com sucesso!");
                     return;
                 }

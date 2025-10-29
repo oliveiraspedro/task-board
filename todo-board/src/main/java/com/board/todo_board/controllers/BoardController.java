@@ -22,4 +22,13 @@ public class BoardController {
             System.out.println("Erro ao criar um novo board: " + e.getMessage());
         }
     }
+
+    public void alterBoardName(BoardEntity board, String newBoardName){
+        try {
+            boardService.alterBoardName(board, newBoardName);
+            System.out.println("Nome do board alterado com sucesso!");
+        } catch (Exception e){
+            System.out.println("Erro ao alterar o nome do board: " + e.getMessage());
+        }
+    }
 }
