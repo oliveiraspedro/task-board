@@ -74,7 +74,7 @@ public class BoardService {
         });
     }
 
-    public void createCard(Long boardId, String cardTitle, String cardDescription){
+    public CardDetailsDTO createCard(Long boardId, String cardTitle, String cardDescription){
 
         //todo: Implementar a lógica de formatação de data de criação do card
 
@@ -89,18 +89,29 @@ public class BoardService {
         System.out.println("CARD CREATEDAT: " + LocalDateTime.now().format(formatter));
         System.out.println("CARD CREATEDAT: " + LocalDateTime.now().format(formatter));
 
-        CardEntity card = new CardEntity();
-
-        if (!cardTitle.isEmpty() && !cardDescription.isEmpty()){
-            card.setTitle(cardTitle);
-            card.setDescription(cardDescription);
-            card.setCreateAt(LocalDateTime.now());
-
-            Optional<ColumnEntity> initialColumnOptional = columRepository.findByBoardIdAndType(boardId, ColumTypesEnum.INITIAL);
-            ColumnEntity initialColumn = initialColumnOptional.orElseThrow(() -> new RuntimeException("Coluna inicial não encontrada para este board"));
-            card.setColumnId(initialColumn.getId());
-            cardRepository.save(card);
+        if (cardTitle.isEmpty() && cardTitle.isBlank()){
+            throw new IllegalArgumentException("O título do card não pode estar vazio");
         }
+
+        if (cardDescription.isEmpty() && cardDescription.isBlank()){
+            throw new IllegalArgumentException("A descrição do card não pode estar vazia");
+        }
+
+        CardEntity card = new CardEntity();
+        CardDetailsDTO cardDTO = new CardDetailsDTO();
+
+        card.setTitle(cardTitle);
+        card.setDescription(cardDescription);
+        card.setCreateAt(LocalDateTime.now());
+
+        Optional<ColumnEntity> initialColumnOptional = columRepository.findByBoardIdAndType(boardId, ColumTypesEnum.INITIAL);
+        ColumnEntity initialColumn = initialColumnOptional.orElseThrow(() -> new RuntimeException("Coluna inicial não encontrada para este board"));
+        card.setColumnId(initialColumn.getId());
+        cardRepository.save(card);
+
+        cardDTO.setTitle(card.getTitle());
+        cardDTO.setDescription(card.getDescription());
+        return cardDTO;
     }
 
     public List<BoardEntity> getAllBoards(){

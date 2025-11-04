@@ -1,5 +1,6 @@
 package com.board.todo_board.controllers;
 
+import com.board.todo_board.dtos.CardDetailsDTO;
 import com.board.todo_board.dtos.ColumnDTO;
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.ColumnEntity;
@@ -39,6 +40,17 @@ public class BoardController {
             System.out.println("Board deletado com sucesso!");
         } catch (Exception e){
             System.out.println("Erro ao tentar deletar o board: " + e.getMessage());
+        }
+    }
+
+    public void createCard(Long boardId, String cardTitle, String cardDescription){
+        try{
+            CardDetailsDTO cardDetailsDTO = boardService.createCard(boardId, cardTitle, cardDescription);
+            System.out.println("Card criado com sucesso!");
+            System.out.println("Título: " + cardDetailsDTO.getTitle());
+            System.out.println("Descrição: " + cardDetailsDTO.getDescription());
+        } catch (Exception e){
+            System.out.println("Erro ao tentar criar um card: " + e.getMessage());
         }
     }
 }

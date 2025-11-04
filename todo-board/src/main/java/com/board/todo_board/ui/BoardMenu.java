@@ -1,5 +1,6 @@
 package com.board.todo_board.ui;
 
+import com.board.todo_board.controllers.BoardController;
 import com.board.todo_board.dtos.CardDetailsDTO;
 import com.board.todo_board.entities.BoardEntity;
 import com.board.todo_board.entities.CardEntity;
@@ -16,6 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class BoardMenu {
+
+    @Autowired
+    BoardController boardController;
 
     @Autowired
     BoardService boardService;
@@ -116,7 +120,7 @@ public class BoardMenu {
         System.out.println("Digite uma descrição para o card");
         String cardDescription = sc.nextLine();
 
-        boardService.createCard(boardId, cardTitle, cardDescription);
+        boardController.createCard(boardId, cardTitle, cardDescription);
     }
 
     private void moveCard(BoardEntity board) {
