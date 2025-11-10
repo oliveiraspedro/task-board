@@ -29,6 +29,9 @@ Thumbs.db
 # Exclui arquivos de logs
 *.log
 
+# Excluir o arquivo de variáveis de ambiente
+.env
+
 # Exclui arquivos de configuração sensíveis
 src/main/resources/application.properties
 src/main/resources/application.yml
