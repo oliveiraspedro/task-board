@@ -1,4 +1,4 @@
-# task-board
+# ToDoBoard
 Uma aplicação de gerenciamento de tarefas (To-Do List) aonde os usuários podem criar boards de tarefas e gerencia-las podendo adicionar tarefas novas, visualizar as tarefas criadas e gerenciar quais tarefas não foram iniciadas, quais foram iniciadas e quais foram concluída.
 
 ## 🌟 Tecnologias Utilizadas
