@@ -224,7 +224,7 @@ public class BoardMenu {
         if (cardDTO.isBlocked() || cardDTO.getBlockedIn() != null){
             System.out.println("   >> Card #" + cardDTO.getId() + " | " + cardDTO.getTitle() + "\n" +
                     "      " + "Descrição: " + cardDTO.getDescription() + "\n" +
-                    "      " + "Criado em: " + cardDTO.getCreateAt() + "\n" +
+                    "      " + "Criado em: " + cardDTO.formatTime(cardDTO.getCreateAt()) + "\n" +
                     "      " + "Status: " + "BLOQUEADO" + "\n" +
                     "      " + "Motivo: " + cardDTO.getBlockCause() + "\n" +
                     "      " + "Data de Bloqueio: " + cardDTO.getBlockedIn());
@@ -232,14 +232,14 @@ public class BoardMenu {
         } else if(cardDTO.getUnblockedIn() != null){
             System.out.println("   >> Card #" + cardDTO.getId() + " | " + cardDTO.getTitle() + "\n" +
                     "      " + "Descrição: " + cardDTO.getDescription() + "\n" +
-                    "      " + "Criado em: " + cardDTO.getCreateAt() + "\n" +
+                    "      " + "Criado em: " + cardDTO.formatTime(cardDTO.getCreateAt()) + "\n" +
                     "      " + "Status: " + "DESBLOQUEADO" + "\n" +
                     "      " + "Motivo: " + cardDTO.getUnblockCause() + "\n" +
                     "      " + "Data de Desbloqueio: " + cardDTO.getUnblockedIn());
         } else {
             System.out.println("   >> Card #" + cardDTO.getId() + " | " + cardDTO.getTitle() + "\n" +
                     "      " + "Descrição: " + cardDTO.getDescription() + "\n" +
-                    "      " + "Criado em: " + cardDTO.getCreateAt() + "\n" +
+                    "      " + "Criado em: " + cardDTO.formatTime(cardDTO.getCreateAt()) + "\n" +
                     "      " + "Status: " + "ATIVO" + "\n");
         }
     }
