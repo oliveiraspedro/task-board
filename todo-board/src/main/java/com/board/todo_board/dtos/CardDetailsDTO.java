@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -18,4 +19,9 @@ public class CardDetailsDTO {
     private String blockCause;
     private LocalDateTime unblockedIn;
     private String unblockCause;
+
+    public String formatTime(LocalDateTime createAt){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return createAt.format(formatter);
+    }
 }
